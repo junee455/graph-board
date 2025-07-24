@@ -1,0 +1,28 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    expose:
+      - 8080
+    networks:
+      - graph-board-network
+
+  frontend:
+    build:
+      context: ./frontend
+    expose:
+      - 3000
+    depends_on:
+      - backend
+    networks:
+      - graph-board-network
+
+  nginx:
+    build:
+      context: ./nginx
+    ports:
+      - "8000:8000"
+
+networks:
+  graph-board-network:
+    driver: bridge

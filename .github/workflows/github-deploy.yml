@@ -1,0 +1,14 @@
+name: GitHub Deploy Stage
+run-name: ${{ github.actor }} deploying to stage
+on: workflow_dispatch
+
+jobs:
+  Deploy:
+    runs-on: self-hosted
+    environment: production
+    steps:
+      - name: pull
+        uses: actions/checkout@v4
+      - name: prepare env
+        env:
+        run: docker compose -f ./compose-stage.yml up --build -d
