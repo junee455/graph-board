@@ -7,6 +7,7 @@ services:
       - ${BACKEND_PORT}
     environment:
       BACKEND_PORT: ${BACKEND_PORT}
+      PORT: ${BACKEND_PORT}
     networks:
       - graph-board-network
 
@@ -34,7 +35,7 @@ services:
       - backend
       - frontend
     ports:
-      - "${NGINX_INNER_PORT}:${NGINX_EXPOSED_PORT}"
+      - "${NGINX_EXPOSED_PORT}:${NGINX_INNER_PORT}"
     environment:
       FRONTEND_PORT: ${FRONTEND_PORT}
       BACKEND_PORT: ${BACKEND_PORT}
