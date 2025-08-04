@@ -1,0 +1,38 @@
+worker_processes 1;
+
+events {
+  worker_connections 1024;
+}
+
+http {
+  include       mime.types;
+  default_type  application/octet-stream;
+
+  sendfile        on;
+  keepalive_timeout  65;
+
+  upstream frontend {
+    server gb-frontend:${FRONTEND_PORT};
+  }
+
+  upstream backend {
+    server gb-backend:${BACKEND_PORT};
+  }
+
+  server {
+    listen ${NGINX_INNER_PORT};
+
+    # Proxy /api/ requests to Go backend
+    location /api/ {
+      proxy_pass http://backend;
+      proxy_http_version 1.1;
+      rewrite ^/api/(.*)$ /$1 break;
+    }
+
+    # Everything else to frontend
+    location / {
+      proxy_pass http://frontend;
+      proxy_http_version 1.1;
+    }
+  }
+}

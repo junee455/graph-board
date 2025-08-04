@@ -1,27 +1,45 @@
 services:
   backend:
+    container_name: gb-backend
     build:
       context: ./backend
     expose:
-      - 8080
+      - ${BACKEND_PORT}
     networks:
       - graph-board-network
 
   frontend:
+    container_name: gb-frontend
     build:
       context: ./frontend
     expose:
-      - 3000
+      - ${FRONTEND_PORT}
     depends_on:
       - backend
     networks:
       - graph-board-network
 
   nginx:
+    container_name: gb-nginx
     build:
       context: ./nginx
+      args:
+        CONF_TEMPLATE_FILE: nginx-dev.conf.template
+    depends_on:
+      - backend
+      - frontend
     ports:
-      - "8000:8000"
+      - "${NGINX_INNER_PORT}:${NGINX_EXPOSED_PORT}"
+    environment:
+      FRONTEND_PORT: ${FRONTEND_PORT}
+      BACKEND_PORT: ${BACKEND_PORT}
+      MONGO_PORT: ${MONGO_PORT}
+      NGINX_INNER_PORT: ${NGINX_INNER_PORT}
+      NGINX_EXPOSED_PORT: ${NGINX_EXPOSED_PORT}
+    entrypoint: ["/etc/entrypoint.sh"]
+    command: ["nginx", "-g", "daemon off;"]
+    networks:
+      - graph-board-network
 
 networks:
   graph-board-network:

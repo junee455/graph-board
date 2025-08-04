@@ -9,6 +9,6 @@ jobs:
     steps:
       - name: pull
         uses: actions/checkout@v4
-      - name: prepare env
+      - name: run container
         env:
-        run: docker compose -f ./compose-stage.yml up --build -d
+        run: bash stage.sh
