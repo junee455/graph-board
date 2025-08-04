@@ -10,5 +10,4 @@ jobs:
       - name: pull
         uses: actions/checkout@v4
       - name: run container
-        env:
         run: bash stage.sh
