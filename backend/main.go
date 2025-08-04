@@ -20,5 +20,7 @@ func main() {
 
 	backendPort := os.Getenv("BACKEND_PORT")
 
+	fmt.Printf("Running on port: %s\n", backendPort)
+
 	router.Run(fmt.Sprintf(":%s", backendPort))
 }

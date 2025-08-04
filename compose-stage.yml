@@ -5,6 +5,8 @@ services:
       context: ./backend
     expose:
       - ${BACKEND_PORT}
+    environment:
+      BACKEND_PORT: ${BACKEND_PORT}
     networks:
       - graph-board-network
 
@@ -14,6 +16,9 @@ services:
       context: ./frontend
     expose:
       - ${FRONTEND_PORT}
+    environment:
+      FRONTEND_PORT: ${FRONTEND_PORT}
+      PORT: ${FRONTEND_PORT}
     depends_on:
       - backend
     networks:
