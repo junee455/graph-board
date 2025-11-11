@@ -1,19 +1,12 @@
-FROM golang:1.24 AS base
 
-# Set the Current Working Directory inside the container
-WORKDIR /app
+FROM python:3.9
+WORKDIR /backend
 
-# Copy go.mod and go.sum files to download dependencies
-COPY go.mod go.sum ./
+COPY requirements.txt .
+COPY ./app ./app
 
-# Download Go dependencies. Dependencies will be cached if the go.mod and go.sum files are not changed
-RUN go mod tidy
+RUN pip install -r requirements.txt
 
-# Install air for hot-reloading during development
-RUN go install github.com/air-verse/air@latest
+ENV PYTHONPATH="/backend/app:${PYTHONPATH}"
 
-# Copy the source code into the container
-COPY . .
-
-# Start the application with air for hot reloading
-CMD ["air"]
+CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
