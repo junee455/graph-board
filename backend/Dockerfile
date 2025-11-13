@@ -9,4 +9,7 @@ RUN pip install -r requirements.txt
 
 ENV PYTHONPATH="/backend/app:${PYTHONPATH}"
 
-CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+ARG BACKEND_PORT
+ENV BACKEND_PORT=$BACKEND_PORT
+
+CMD ["sh", "-c", "python -m uvicorn main:app --host 0.0.0.0 --port ${BACKEND_PORT}"]
