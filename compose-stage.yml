@@ -3,69 +3,68 @@ version: "3.8"
 services:
   db:
     image: postgres:13
-    container_name: gb-postgres
+    container_name: gb-postgres-stage
     environment:
-      POSTGRES_DB: card_db
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ${POSTGRES_DB:-card_db_stage}
+      POSTGRES_USER: ${POSTGRES_USER_STAGE}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD_STAGE}
     ports:
-      - "5432:5432"
+      - "${DB_HOST_PORT_STAGE:-5433}:5432"  # Другой порт чтобы не конфликтовать с девом
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data_stage:/var/lib/postgresql/data
     networks:
-      - graph-board-network
+      - graph-board-network-stage
 
   backend:
-    container_name: gb-backend
+    container_name: gb-backend-stage
     build:
       context: ./backend
+      target: production  # Если есть разные стадии сборки
     expose:
-      - ${BACKEND_PORT}
+      - ${BACKEND_PORT_STAGE:-8001}  # Другой порт
     environment:
-      BACKEND_PORT: ${BACKEND_PORT}
-      PORT: ${BACKEND_PORT}
-      DATABASE_URL: "postgresql://user:password@db:5432/card_db"
-    volumes:
-      - ./backend:/app
+      BACKEND_PORT: ${BACKEND_PORT_STAGE:-8001}
+      PORT: ${BACKEND_PORT_STAGE:-8001}
+      DATABASE_URL: "postgresql://${POSTGRES_USER_STAGE}:${POSTGRES_PASSWORD_STAGE}@db:5432/${POSTGRES_DB:-card_db_stage}"
+      DEBUG: "False"
     depends_on:
       - db
     networks:
-      - graph-board-network
+      - graph-board-network-stage
 
   frontend:
-    container_name: gb-frontend
+    container_name: gb-frontend-stage
     build:
       context: ./frontend
+      target: production  # Продакшен сборка
     expose:
-      - ${FRONTEND_PORT}
+      - ${FRONTEND_PORT_STAGE:-3001}  # Другой порт
     environment:
-      FRONTEND_PORT: ${FRONTEND_PORT}
-      PORT: ${FRONTEND_PORT}
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
+      FRONTEND_PORT: ${FRONTEND_PORT_STAGE:-3001}
+      PORT: ${FRONTEND_PORT_STAGE:-3001}
+      REACT_APP_API_URL: ${REACT_APP_API_URL_STAGE}
     depends_on:
       - backend
     networks:
-      - graph-board-network
+      - graph-board-network-stage
 
   nginx:
-    container_name: gb-nginx
+    container_name: gb-nginx-stage
     build:
       context: ./nginx
       args:
-        CONF_TEMPLATE_FILE: nginx-dev.conf.template
+        CONF_TEMPLATE_FILE: nginx-stage.conf.template  # Другой конфиг
     depends_on:
       - backend
       - frontend
     ports:
-      - "${NGINX_EXPOSED_PORT}:${NGINX_INNER_PORT}"
+      - "${NGINX_EXPOSED_PORT_STAGE:-8080}:80"  # Другой внешний порт
     networks:
-      - graph-board-network
+      - graph-board-network-stage
 
 volumes:
-  postgres_data:
+  postgres_data_stage:  # Отдельный volume
 
 networks:
-  graph-board-network:
+  graph-board-network-stage:  # Отдельная сеть
     driver: bridge
