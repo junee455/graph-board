@@ -57,7 +57,16 @@ services:
       - backend
       - frontend
     ports:
-      - "${NGINX_EXPOSED_PORT:-8080}:NGINX_INNER_PORT"  # Другой внешний порт
+      - "${NGINX_EXPOSED_PORT}:${NGINX_INNER_PORT}"
+    environment:
+      FRONTEND_PORT: ${FRONTEND_PORT}
+      BACKEND_PORT: ${BACKEND_PORT}
+      MONGO_PORT: ${MONGO_PORT}
+      NGINX_INNER_PORT: ${NGINX_INNER_PORT}
+      NGINX_EXPOSED_PORT: ${NGINX_EXPOSED_PORT}
+    entrypoint: ["/etc/entrypoint.sh"]
+    command: ["nginx", "-g", "daemon off;"]
+
     networks:
       - graph-board-network-stage
 
