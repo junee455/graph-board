@@ -61,6 +61,7 @@ services:
       FRONTEND_PORT: ${FRONTEND_PORT:-3000}
       BACKEND_PORT: ${BACKEND_PORT:-8000}
       NGINX_INNER_PORT: ${NGINX_INNER_PORT:-80}
+      NGINX_EXPOSED_PORT: ${NGINX_EXPOSED_PORT:-80}
     entrypoint: ["/etc/entrypoint.sh"]
     command: ["nginx", "-g", "daemon off;"]
     networks:
