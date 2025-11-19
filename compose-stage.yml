@@ -38,11 +38,10 @@ services:
       context: ./frontend
       target: production  # Продакшен сборка
     expose:
-      - ${FRONTEND_PORT_STAGE:-3001}  # Другой порт
+      - ${FRONTEND_PORT:-3001}  # Другой порт
     environment:
-      FRONTEND_PORT: ${FRONTEND_PORT_STAGE:-3001}
-      PORT: ${FRONTEND_PORT_STAGE:-3001}
-      REACT_APP_API_URL: ${REACT_APP_API_URL_STAGE}
+      FRONTEND_PORT: ${FRONTEND_PORT:-3001}
+      PORT: ${FRONTEND_PORT:-3001}
     depends_on:
       - backend
     networks:
@@ -58,7 +57,7 @@ services:
       - backend
       - frontend
     ports:
-      - "${NGINX_EXPOSED_PORT_STAGE:-8080}:80"  # Другой внешний порт
+      - "${NGINX_EXPOSED_PORT:-8080}:NGINX_INNER_PORT"  # Другой внешний порт
     networks:
       - graph-board-network-stage
 
